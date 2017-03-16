@@ -198,7 +198,8 @@ public extension OSCCameraCommand {
         self.cancel()
 
         let url = URL(string: "http://\(ipAddress):\(httpPort)/osc/info")!
-        let request = URLRequest(url: url)
+        var request = URLRequest(url: url)
+        request.cachePolicy = URLRequest.CachePolicy.reloadIgnoringLocalAndRemoteCacheData
         self.task = self.urlSession!.dataTask(with: request, completionHandler: { (data, response, error) in
             completionHandler(data, response, error)
         }) 
