@@ -232,7 +232,7 @@ public extension OSCCameraCommand {
         let url = URL(string: "http://\(ipAddress):\(httpUpdatesPort)/osc/checkForUpdates")!
         var request = self.getRequest(url: url)
         request.httpMethod = "POST"
-        request.setValue("application/json; charaset=utf-8", forHTTPHeaderField: "Content-Type")
+        request.setValue("application/json;charset=utf-8", forHTTPHeaderField: "Content-Type")
         let object: [String: Any] = ["stateFingerprint": stateFingerprint]
         do {
             request.httpBody = try JSONSerialization.data(withJSONObject: object, options: .prettyPrinted)
@@ -250,7 +250,7 @@ public extension OSCCameraCommand {
         let url = URL(string: "http://\(ipAddress):\(httpPort)/osc/commands/execute")!
         var request = self.getRequest(url: url)
         request.httpMethod = "POST"
-        request.setValue("application/json; charaset=utf-8", forHTTPHeaderField: "Content-Type")
+        request.setValue("application/json;charset=utf-8", forHTTPHeaderField: "Content-Type")
         var object: [String: Any] = ["name": name]
         if let parameters = parameters {
             object["parameters"] = parameters
@@ -292,7 +292,7 @@ public extension OSCCameraCommand {
         let url = URL(string: "http://\(ipAddress):\(httpPort)/osc/commands/status")!
         var request = self.getRequest(url: url)
         request.httpMethod = "POST"
-        request.setValue("application/json; charaset=utf-8", forHTTPHeaderField: "Content-Type")
+        request.setValue("application/json;charset=utf-8", forHTTPHeaderField: "Content-Type")
         let object: [String: Any] = ["id": id]
         do {
             request.httpBody = try JSONSerialization.data(withJSONObject: object, options: .prettyPrinted)
