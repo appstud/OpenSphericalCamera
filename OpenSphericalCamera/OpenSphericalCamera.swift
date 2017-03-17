@@ -154,6 +154,7 @@ open class OpenSphericalCamera: OSCCameraCommand {
     public init(ipAddress: String, httpPort: Int) {
         self.ipAddress = ipAddress
         self.httpPort  = httpPort
+        self.urlSession!.configuration.requestCachePolicy = URLRequest.CachePolicy.reloadIgnoringLocalAndRemoteCacheData
     }
 
     deinit {
@@ -163,6 +164,8 @@ open class OpenSphericalCamera: OSCCameraCommand {
 }
 
 public extension OSCCameraCommand {
+
+
 
     // MARK: OSCBase Methods
 
@@ -181,11 +184,17 @@ public extension OSCCameraCommand {
         }
     }
 
+    public func getRequest(url: URL) -> URLRequest {
+        var request = URLRequest(url: url)
+        request.cachePolicy = URLRequest.CachePolicy.reloadIgnoringLocalAndRemoteCacheData
+        return request
+    }
+
     public func get(_ urlString: String, thumbnailed: Bool = false, completionHandler: @escaping ((Data?, URLResponse?, Error?) -> Void)) { // Added in v2
         self.cancel()
 
         let url = URL(string: thumbnailed ? urlString + "?type=thumb" : urlString)!
-        let request = URLRequest(url: url)
+        let request = self.getRequest(url: url)
         self.task = self.urlSession!.dataTask(with: request, completionHandler: { (data, response, error) in
             completionHandler(data, response, error)
         }) 
@@ -198,8 +207,7 @@ public extension OSCCameraCommand {
         self.cancel()
 
         let url = URL(string: "http://\(ipAddress):\(httpPort)/osc/info")!
-        var request = URLRequest(url: url)
-        request.cachePolicy = URLRequest.CachePolicy.reloadIgnoringLocalAndRemoteCacheData
+        let request = self.getRequest(url: url)
         self.task = self.urlSession!.dataTask(with: request, completionHandler: { (data, response, error) in
             completionHandler(data, response, error)
         }) 
@@ -210,7 +218,7 @@ public extension OSCCameraCommand {
         self.cancel()
 
         let url = URL(string: "http://\(ipAddress):\(httpPort)/osc/state")!
-        var request = URLRequest(url: url)
+        var request = self.getRequest(url: url)
         request.httpMethod = "POST"
         self.task = self.urlSession!.dataTask(with: request, completionHandler: { (data, response, error) in
             completionHandler(data, response, error)
@@ -222,7 +230,7 @@ public extension OSCCameraCommand {
         self.cancel()
 
         let url = URL(string: "http://\(ipAddress):\(httpUpdatesPort)/osc/checkForUpdates")!
-        var request = URLRequest(url: url)
+        var request = self.getRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json; charaset=utf-8", forHTTPHeaderField: "Content-Type")
         let object: [String: Any] = ["stateFingerprint": stateFingerprint]
@@ -240,7 +248,7 @@ public extension OSCCameraCommand {
 
     public func getRequestForExecute(_ name: String, parameters: [String: Any]? = nil) -> URLRequest {
         let url = URL(string: "http://\(ipAddress):\(httpPort)/osc/commands/execute")!
-        var request = URLRequest(url: url)
+        var request = self.getRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json; charaset=utf-8", forHTTPHeaderField: "Content-Type")
         var object: [String: Any] = ["name": name]
@@ -282,7 +290,7 @@ public extension OSCCameraCommand {
         self.cancel()
 
         let url = URL(string: "http://\(ipAddress):\(httpPort)/osc/commands/status")!
-        var request = URLRequest(url: url)
+        var request = self.getRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json; charaset=utf-8", forHTTPHeaderField: "Content-Type")
         let object: [String: Any] = ["id": id]
